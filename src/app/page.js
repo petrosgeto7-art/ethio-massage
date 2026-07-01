@@ -62,6 +62,7 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [lightbox, setLightbox] = useState(null);
   const [theme, setTheme] = useState("dark");
+  const [isMobile, setIsMobile] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
   const [booking, setBooking] = useState({
     service: "", price: "", therapist: "", date: "", time: "",
@@ -87,6 +88,14 @@ export default function Home() {
     } else {
       localStorage.setItem("theme", "dark");
     }
+  }, []);
+
+  // Detect mobile
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -119,13 +128,13 @@ export default function Home() {
 
   // Auto-slide testimonials
   useEffect(() => {
-    const slidesPerView = typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 3;
-    const total = TESTIMONIALS.length - slidesPerView + 1;
+    const spv = isMobile ? 1 : 3;
+    const total = TESTIMONIALS.length - spv + 1;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % Math.max(total, 1));
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isMobile]);
 
   // Slide the track
   useEffect(() => {
@@ -185,7 +194,7 @@ Please confirm my appointment. Thank you!`;
     setShowConfirm(false);
   }, []);
 
-  const slidesPerView = typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 3;
+  const slidesPerView = isMobile ? 1 : 3;
   const totalSlides = Math.max(TESTIMONIALS.length - slidesPerView + 1, 1);
 
   // ── RENDER ────────────────────────────────────────────────────
@@ -227,14 +236,14 @@ Please confirm my appointment. Thank you!`;
               +251 953 226 886
             </a>
             <a href="#booking" className="nav-book">Book Now</a>
-            <button onClick={toggleTheme} className="theme-toggle" style={{ marginLeft: '12px', background: 'var(--warm-bg)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--warm-border)', color: 'var(--text)', transition: 'var(--transition)' }}>
-              {theme === "light" ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-              )}
-            </button>
           </div>
+          <button onClick={toggleTheme} className="theme-toggle" style={{ background: 'var(--warm-bg)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--warm-border)', color: 'var(--text)', transition: 'var(--transition)', flexShrink: 0 }}>
+            {theme === "light" ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            )}
+          </button>
           <a href="tel:+251953226886" className="nav-contact-btn mobile-only" style={{ width: '40px', height: '40px', background: 'var(--emerald-mid)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 4px 12px rgba(34,128,94,0.3)', transition: 'transform 0.2s' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
           </a>
@@ -290,6 +299,20 @@ Please confirm my appointment. Thank you!`;
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Addis Ababa, Ethiopia
           </div>
+        </div>
+
+        <div className="drawer-divider" />
+        <div className="drawer-label">Appearance</div>
+        <div style={{ padding: '8px 12px' }}>
+          <button onClick={toggleTheme} style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '100%', padding: '13px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }}>
+            <span className="nav-icon" style={{ width: '38px', height: '38px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gold)', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.4)', fontSize: '18px', flexShrink: 0 }}>
+              {theme === "light" ? "🌙" : "☀️"}
+            </span>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: '600', color: 'rgba(255,255,255,0.85)' }}>
+              {theme === "light" ? "Dark Mode" : "Light Mode"}
+            </span>
+            <span style={{ marginLeft: 'auto', color: 'var(--gold)', fontSize: '14px' }}>›</span>
+          </button>
         </div>
 
         <div className="mobile-drawer-footer">
